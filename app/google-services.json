@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "992699695202",
+    "project_id": "agro-map-47062",
+    "storage_bucket": "agro-map-47062.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:992699695202:android:f3b0e52fff97a03933113b",
+        "android_client_info": {
+          "package_name": "com.example.agro_map"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxQeoXkNCOYobxUZGiXaiNdYczI1smXrI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
