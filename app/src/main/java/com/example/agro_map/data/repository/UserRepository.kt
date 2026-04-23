@@ -2,6 +2,7 @@ package com.example.agro_map.data.repository
 
 import com.example.agro_map.data.model.User
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
 
@@ -49,19 +50,23 @@ class UserRepository {
         usersCollection.document(uid).update("points", user.points + points).await()
     }
 
-    suspend fun getLeaderboard(): List<User> {
-        val snapshot = usersCollection
+    fun listenToLeaderboard(onUpdate: (List<User>) -> Unit): ListenerRegistration {
+        return usersCollection
             .orderBy("points", Query.Direction.DESCENDING)
-            .get().await()
-        return snapshot.documents.map { doc ->
-            User(
-                uid = doc.id,
-                username = doc.getString("username") ?: "",
-                fullName = doc.getString("fullName") ?: "",
-                phone = doc.getString("phone") ?: "",
-                photoUrl = doc.getString("photoUrl") ?: "",
-                points = doc.getLong("points")?.toInt() ?: 0
-            )
-        }
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot != null) {
+                    val users = snapshot.documents.map { doc ->
+                        User(
+                            uid = doc.id,
+                            username = doc.getString("username") ?: "",
+                            fullName = doc.getString("fullName") ?: "",
+                            phone = doc.getString("phone") ?: "",
+                            photoUrl = doc.getString("photoUrl") ?: "",
+                            points = doc.getLong("points")?.toInt() ?: 0
+                        )
+                    }
+                    onUpdate(users)
+                }
+            }
     }
 }

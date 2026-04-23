@@ -14,18 +14,19 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.agro_map.AppContainer
 import com.example.agro_map.data.model.User
-import kotlinx.coroutines.launch
 
 @Composable
 fun LeaderboardScreen(container: AppContainer) {
     var users by remember { mutableStateOf<List<User>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     val currentUid = container.authRepository.currentUser?.uid
-    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        users = container.userRepository.getLeaderboard()
-        loading = false
+    DisposableEffect(Unit) {
+        val listener = container.userRepository.listenToLeaderboard {
+            users = it
+            loading = false
+        }
+        onDispose { listener.remove() }
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {

@@ -1,5 +1,6 @@
 package com.example.agro_map.ui.screens.addreport
 
+import android.Manifest
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -53,6 +54,14 @@ fun AddReportScreen(
         uri?.let { photoUri = it }
     }
     var showImagePicker by remember { mutableStateOf(false) }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) {
+            val file = File(context.cacheDir, "report_photo.jpg")
+            cameraUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+            cameraLauncher.launch(cameraUri!!)
+        }
+    }
 
     // Get location
     LaunchedEffect(Unit) {
@@ -196,9 +205,7 @@ fun AddReportScreen(
                     }) { Text("Pick from Gallery") }
                     TextButton(onClick = {
                         showImagePicker = false
-                        val file = File(context.cacheDir, "report_photo.jpg")
-                        cameraUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-                        cameraLauncher.launch(cameraUri!!)
+                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                     }) { Text("Take Photo") }
                 }
             },

@@ -1,5 +1,6 @@
 package com.example.agro_map.ui.screens.register
 
+import android.Manifest
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -54,6 +55,14 @@ fun RegisterScreen(
     }
 
     var showImagePicker by remember { mutableStateOf(false) }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) {
+            val file = File(context.cacheDir, "camera_photo.jpg")
+            cameraUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+            cameraLauncher.launch(cameraUri!!)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -159,9 +168,7 @@ fun RegisterScreen(
                     }) { Text("Pick from Gallery") }
                     TextButton(onClick = {
                         showImagePicker = false
-                        val file = File(context.cacheDir, "camera_photo.jpg")
-                        cameraUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-                        cameraLauncher.launch(cameraUri!!)
+                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                     }) { Text("Take Photo") }
                 }
             },
